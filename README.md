@@ -9,6 +9,9 @@ Add to your project’s `Cargo.toml`:
 
 ```toml
 [dependencies]
+edgar-rs = { git = "https://github.com/aktagon/edgar-rs.git", branch = "master" }
+
+# Alternatively:
 edgar-rs = "0.1.0"
 ```
 
