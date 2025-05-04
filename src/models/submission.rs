@@ -190,10 +190,26 @@ impl SubmissionHistory {
                     accession_number: recent.accessionNumber.get(i).cloned().unwrap_or_default(),
                     filing_date: recent.filingDate.get(i).cloned().unwrap_or_default(),
                     report_date: recent.reportDate.get(i).cloned().unwrap_or_default(),
+                    acceptance_date_time: recent
+                        .acceptanceDateTime
+                        .get(i)
+                        .cloned()
+                        .unwrap_or_default(),
                     form: recent.form.get(i).cloned().unwrap_or_default(),
                     primary_document: recent.primaryDocument.get(i).cloned().unwrap_or_default(),
+                    primary_doc_description: recent
+                        .primaryDocDescription
+                        .get(i)
+                        .cloned()
+                        .unwrap_or_default(),
+                    file_number: recent.fileNumber.get(i).cloned().unwrap_or_default(),
+                    film_number: recent.filmNumber.get(i).cloned().unwrap_or_default(),
+                    items: recent.items.get(i).cloned().unwrap_or_default(),
+                    size: recent.size.get(i).cloned().unwrap_or(0),
                     is_xbrl: recent.isXBRL.get(i).cloned().unwrap_or(0) == 1,
                     is_inline_xbrl: recent.isInlineXBRL.get(i).cloned().unwrap_or(0) == 1,
+                    is_paper: recent.isPaper.get(i).cloned().unwrap_or(0) == 1,
+                    instance_url: recent.instanceUrl.get(i).cloned().unwrap_or(None),
                 });
             }
         }
@@ -232,7 +248,8 @@ impl SubmissionHistory {
     }
 }
 
-/// A filing entry in a company's submission history.
+/// A filing entry in a company's submission history. NOTE: The data in the Recent struct is copied
+/// to Vec<FilingEntry>. This could be optimized later.
 #[derive(Debug, Clone)]
 pub struct FilingEntry {
     /// The accession number of the filing.
@@ -244,15 +261,39 @@ pub struct FilingEntry {
     /// The report date of the filing.
     pub report_date: String,
 
+    /// The acceptance date and time of the filing.
+    pub acceptance_date_time: String,
+
     /// The form type of the filing.
     pub form: String,
 
     /// The primary document for the filing.
     pub primary_document: String,
 
+    /// The primary document description for the filing.
+    pub primary_doc_description: String,
+
+    /// The file number of the filing.
+    pub file_number: String,
+
+    /// The film number of the filing.
+    pub film_number: String,
+
+    /// The items referenced in the filing.
+    pub items: String,
+
+    /// The size of the complete submission file in bytes.
+    pub size: i64,
+
     /// Indicates whether the filing is in XBRL format.
     pub is_xbrl: bool,
 
     /// Indicates whether the filing is in inline XBRL format.
     pub is_inline_xbrl: bool,
+
+    /// Indicates whether the filing was submitted via paper.
+    pub is_paper: bool,
+
+    /// Instance document URL.
+    pub instance_url: Option<String>,
 }
