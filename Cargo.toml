@@ -1,0 +1,57 @@
+[package]
+name = "edgar-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["Christian Hellsten <christian.hellsten@aktagon.com>"]
+description = "A Rust client for the SEC EDGAR API"
+readme = "README.md"
+repository = "https://github.com/aktagon/edgar-rs"
+license = "MIT"
+keywords = ["sec", "edgar", "finance", "xbrl", "api"]
+categories = ["api-bindings", "finance"]
+
+[dependencies]
+reqwest = { version = "0.11", features = ["json"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+async-trait = "0.1"
+tokio = { version = "1", features = ["rt", "rt-multi-thread", "macros"] }
+tempfile = "3.3"
+zip = "0.6"
+thiserror = "1.0"
+log = "0.4.27"
+env_logger = "0.11.8"
+
+[dev-dependencies]
+tokio = { version = "1", features = ["full"] }
+wiremock = "0.5"
+anyhow = "1.0"
+
+[features]
+default = []
+# Enable this feature if you want to include example code
+examples = []
+
+[lib]
+name = "edgar_rs"
+path = "src/lib.rs"
+
+# Optional examples
+[[example]]
+name = "basic_usage"
+path = "examples/basic_usage.rs"
+required-features = ["examples"]
+
+# [[example]]
+# name = "company_facts"
+# path = "examples/company_facts.rs"
+# required-features = ["examples"]
+#
+# [[example]]
+# name = "download_bulk"
+# path = "examples/download_bulk.rs"
+# required-features = ["examples"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
