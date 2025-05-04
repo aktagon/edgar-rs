@@ -83,7 +83,7 @@ impl RateLimiter {
     pub fn update_rate(&mut self, rate: u32, per_seconds: u32) {
         self.rate = rate;
         self.per_seconds = per_seconds;
-        
+
         // We need to recreate the semaphore and replenisher
         self.semaphore = Arc::new(Semaphore::new(rate as usize));
         self.start_replenisher();
@@ -106,7 +106,10 @@ mod tests {
         }
 
         let elapsed = start.elapsed();
-        assert!(elapsed.as_millis() < 100, "First 5 requests should be immediate");
+        assert!(
+            elapsed.as_millis() < 100,
+            "First 5 requests should be immediate"
+        );
 
         // 6th request should be delayed
         let start = Instant::now();

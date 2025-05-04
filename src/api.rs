@@ -5,9 +5,7 @@ use std::path::Path;
 
 use crate::error::Result;
 use crate::models::{
-    company_concept::CompanyConcept,
-    company_facts::CompanyFacts,
-    frames::XbrlFrames,
+    company_concept::CompanyConcept, company_facts::CompanyFacts, frames::XbrlFrames,
     submission::SubmissionHistory,
 };
 use crate::types::{ApiResponse, Period, Taxonomy, Unit};
