@@ -89,9 +89,9 @@ impl XbrlFrames {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, DefaultEdgarApi, Taxonomy, Unit, Period};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy, Unit, Period};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// let frames = edgar_api.get_xbrl_frames(
     ///     Taxonomy::UsGaap,
     ///     "AccountsPayableCurrent",
@@ -137,9 +137,9 @@ impl XbrlFrames {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, DefaultEdgarApi, Taxonomy, Unit, Period};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy, Unit, Period};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// let frames = edgar_api.get_xbrl_frames(
     ///     Taxonomy::UsGaap,
     ///     "AccountsPayableCurrent",
@@ -182,9 +182,9 @@ impl XbrlFrames {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, DefaultEdgarApi, Taxonomy, Unit, Period};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy, Unit, Period};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// let frames = edgar_api.get_xbrl_frames(
     ///     Taxonomy::UsGaap,
     ///     "AccountsPayableCurrent",

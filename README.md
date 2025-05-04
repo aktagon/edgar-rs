@@ -49,11 +49,11 @@ SIC: 6331 – Fire, Marine & Casualty Insurance
 ## Usage
 
 ```rust
-use edgar_rs::{DefaultEdgarApi, EdgarApi, Period, Taxonomy, Unit};
+use edgar_rs::{EdgarClient, EdgarApi, Period, Taxonomy, Unit};
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     env_logger::init();
-    let api = DefaultEdgarApi::new("MyCompany my.email@example.com");
+    let api = EdgarClient::new("MyCompany my.email@example.com");
     let cik = "0000320193";
     // 1. Company profile & submissions history
     let subs = api.get_submissions_history(cik).await?;
@@ -75,7 +75,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 
 ## API Reference
 
-- **`DefaultEdgarApi::new(user_agent: &str)`**
+- **`EdgarClient::new(user_agent: &str)`**
   Constructs a new client. Pass a descriptive user-agent (e.g. `"MyCompany name@domain.com"`).
 
 - **`get_submissions_history(cik: &str) -> SubmissionResponse`**

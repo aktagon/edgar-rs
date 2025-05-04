@@ -1,6 +1,6 @@
 //! Implementation of the `EdgarApi` trait using reqwest.
 //!
-//! This module provides the `DefaultEdgarApi` implementation of the `EdgarApi` trait,
+//! This module provides the `EdgarClient` implementation of the `EdgarApi` trait,
 //! which uses reqwest to make HTTP requests to the SEC EDGAR API.
 
 use async_trait::async_trait;
@@ -27,24 +27,24 @@ use crate::utils::download::{extract_zip, write_temp_file};
 /// # Example
 ///
 /// ```rust,no_run
-/// use edgar_rs::{EdgarApi, DefaultEdgarApi};
+/// use edgar_rs::{EdgarApi, EdgarClient};
 ///
 /// #[tokio::main]
 /// async fn main() -> Result<(), Box<dyn std::error::Error>> {
-///     let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+///     let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
 ///     let submissions = edgar_api.get_submissions_history("0000320193").await?;
 ///     println!("Company name: {}", submissions.data.name);
 ///     Ok(())
 /// }
 /// ```
-pub struct DefaultEdgarApi {
+pub struct EdgarClient {
     client: Client,
     rate_limiter: RateLimiter,
     user_agent: String,
 }
 
-impl DefaultEdgarApi {
-    /// Creates a new `DefaultEdgarApi` instance with the specified user agent.
+impl EdgarClient {
+    /// Creates a new `EdgarClient` instance with the specified user agent.
     ///
     /// # Parameters
     ///
@@ -54,9 +54,9 @@ impl DefaultEdgarApi {
     /// # Example
     ///
     /// ```rust,no_run
-    /// use edgar_rs::DefaultEdgarApi;
+    /// use edgar_rs::EdgarClient;
     ///
-    /// let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// ```
     pub fn new(user_agent: &str) -> Self {
         let client = Client::builder()
@@ -71,7 +71,7 @@ impl DefaultEdgarApi {
         }
     }
 
-    /// Creates a new `DefaultEdgarApi` instance with custom settings.
+    /// Creates a new `EdgarClient` instance with custom settings.
     ///
     /// # Parameters
     ///
@@ -150,7 +150,7 @@ impl DefaultEdgarApi {
 }
 
 #[async_trait]
-impl EdgarApi for DefaultEdgarApi {
+impl EdgarApi for EdgarClient {
     async fn get_submissions_history(&self, cik: &str) -> Result<ApiResponse<SubmissionHistory>> {
         let formatted_cik = format_cik(cik).map_err(|_| EdgarApiError::invalid_cik(cik))?;
         let url = format!("https://data.sec.gov/submissions/CIK{}.json", formatted_cik);

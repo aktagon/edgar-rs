@@ -26,9 +26,9 @@ pub trait EdgarApi {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, DefaultEdgarApi};
+    /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// let submissions = edgar_api.get_submissions_history("0000320193").await?;
     /// println!("Company name: {}", submissions.data.name);
     /// # Ok(())
@@ -48,9 +48,9 @@ pub trait EdgarApi {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, DefaultEdgarApi, Taxonomy};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -76,9 +76,9 @@ pub trait EdgarApi {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, DefaultEdgarApi};
+    /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// # Ok(())
     /// # }
@@ -98,9 +98,9 @@ pub trait EdgarApi {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, DefaultEdgarApi, Taxonomy, Unit, Period};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy, Unit, Period};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// let frames = edgar_api.get_xbrl_frames(
     ///     Taxonomy::UsGaap,
     ///     "AccountsPayableCurrent",

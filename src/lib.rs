@@ -14,12 +14,12 @@
 //! ## Example
 //!
 //! ```rust,no_run
-//! use edgar_rs::{EdgarApi, DefaultEdgarApi, Taxonomy, Unit, Period};
+//! use edgar_rs::{EdgarApi, EdgarClient, Taxonomy, Unit, Period};
 //!
 //! #[tokio::main]
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     // Initialize with a user agent (required by SEC)
-//!     let edgar_api = DefaultEdgarApi::new("Your Company Name your.email@example.com");
+//!     let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
 //!     
 //!     // Get submissions history for Apple Inc. (CIK: 0000320193)
 //!     let submissions = edgar_api.get_submissions_history("0000320193").await?;
@@ -40,7 +40,7 @@
 
 // Re-export main components
 pub use api::EdgarApi;
-pub use client::DefaultEdgarApi;
+pub use client::EdgarClient;
 pub use error::{EdgarApiError, Result};
 
 // Re-export types

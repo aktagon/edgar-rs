@@ -165,12 +165,12 @@ pub trait EdgarApi {
 }
 
 // A default implementation of the EdgarApi trait
-pub struct DefaultEdgarApi {
+pub struct EdgarClient {
     client: reqwest::Client,
     user_agent: String,
 }
 
-impl DefaultEdgarApi {
+impl EdgarClient {
     pub fn new(user_agent: &str) -> Self {
         // As per SEC guidelines, a user agent with contact info is required
         // The user_agent should be in format "Company Name AdminContact@example.com"
@@ -192,7 +192,7 @@ impl DefaultEdgarApi {
 }
 
 #[async_trait]
-impl EdgarApi for DefaultEdgarApi {
+impl EdgarApi for EdgarClient {
     async fn get_submissions_history(
         &self,
         cik: &str,
@@ -490,7 +490,7 @@ impl EdgarApi for DefaultEdgarApi {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the API client with a user agent
-    let edgar_api = DefaultEdgarApi::new("Example Corp example@example.com");
+    let edgar_api = EdgarClient::new("Example Corp example@example.com");
 
     // Get submissions history for Apple Inc. (CIK: 0000320193)
     let submissions = edgar_api.get_submissions_history("0000320193").await?;
