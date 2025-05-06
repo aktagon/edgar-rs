@@ -49,7 +49,7 @@ pub use types::{ApiResponse, Period, Taxonomy, Unit};
 // Export models
 pub use models::{
     company_concept::CompanyConcept, company_facts::CompanyFacts, frames::XbrlFrames,
-    submission::SubmissionHistory,
+    submission::FilingEntry, submission::SubmissionHistory,
 };
 
 // Modules

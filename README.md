@@ -103,6 +103,10 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   - Iterate `.data.get_taxonomies()` and `.data.get_tags_for_taxonomy(taxonomy)` for counts.
   - Use `.data.get_facts_for_form("10-K")` to filter by filing type.
 
+## TODO
+
+- Pagination: filings.recent in https://data.sec.gov/submissions/CIK0001067983.json contains only 1000 filings.
+
 ## Feature Flags
 
 - **`examples`** – Enable to run the `basic_usage` example.
