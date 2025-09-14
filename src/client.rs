@@ -12,7 +12,7 @@ use crate::api::EdgarApi;
 use crate::error::{EdgarApiError, Result};
 use crate::models::{
     company_concept::CompanyConcept, company_facts::CompanyFacts, frames::XbrlFrames,
-    submission::SubmissionHistory,
+    submission::{Recent, SubmissionHistory},
 };
 use crate::rate_limit::RateLimiter;
 use crate::types::{ApiResponse, Period, Taxonomy, Unit};
@@ -154,6 +154,11 @@ impl EdgarApi for EdgarClient {
     async fn get_submissions_history(&self, cik: &str) -> Result<ApiResponse<SubmissionHistory>> {
         let formatted_cik = format_cik(cik).map_err(|_| EdgarApiError::invalid_cik(cik))?;
         let url = format!("https://data.sec.gov/submissions/CIK{}.json", formatted_cik);
+        self.get(&url).await
+    }
+
+    async fn get_submissions_file(&self, filename: &str) -> Result<ApiResponse<Recent>> {
+        let url = format!("https://data.sec.gov/submissions/{}", filename);
         self.get(&url).await
     }
 

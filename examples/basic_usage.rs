@@ -52,17 +52,47 @@ async fn main() -> Result<(), Box<dyn Error>> {
         );
     }
 
-    // Step 2: Get recent filings
+    // Step 2: Get recent filings (including paginated files if needed)
     println!("\n--- Recent Filings ---");
-    let filings = submissions.data.get_all_filings();
-    for (i, filing) in filings.iter().take(5).enumerate() {
-        println!(
-            "{}. {} filed on {} (for period ending {})",
-            i + 1,
-            filing.form,
-            filing.filing_date,
-            filing.report_date
-        );
+    let filings = submissions.data.get_recent_filings();
+    println!("Recent filings (first 1000): {}", filings.len());
+
+    // Check if there are additional filing files
+    if let Some(files) = &submissions.data.filings.files {
+        println!("Additional filing files available: {}", files.len());
+        for file in files {
+            println!(
+                "  {} - {} filings from {} to {}",
+                file.name, file.filingCount, file.filingFrom, file.filingTo
+            );
+        }
+
+        // Fetch all filings including paginated ones
+        println!("Fetching all filings including paginated data...");
+        let all_filings = submissions.data.get_all_filings(&edgar_api).await?;
+        println!("Total filings (including paginated): {}", all_filings.len());
+
+        // Show the first 5 filings
+        for (i, filing) in all_filings.iter().take(5).enumerate() {
+            println!(
+                "{}. {} filed on {} (for period ending {})",
+                i + 1,
+                filing.form,
+                filing.filing_date,
+                filing.report_date
+            );
+        }
+    } else {
+        // Show the first 5 filings from recent
+        for (i, filing) in filings.iter().take(5).enumerate() {
+            println!(
+                "{}. {} filed on {} (for period ending {})",
+                i + 1,
+                filing.form,
+                filing.filing_date,
+                filing.report_date
+            );
+        }
     }
 
     // Step 3: Get company concept data for Revenue

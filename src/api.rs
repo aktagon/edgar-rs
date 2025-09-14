@@ -6,7 +6,7 @@ use std::path::Path;
 use crate::error::Result;
 use crate::models::{
     company_concept::CompanyConcept, company_facts::CompanyFacts, frames::XbrlFrames,
-    submission::SubmissionHistory,
+    submission::{Recent, SubmissionHistory},
 };
 use crate::types::{ApiResponse, Period, Taxonomy, Unit};
 
@@ -35,6 +35,34 @@ pub trait EdgarApi {
     /// # }
     /// ```
     async fn get_submissions_history(&self, cik: &str) -> Result<ApiResponse<SubmissionHistory>>;
+
+    /// Get additional submissions history file
+    ///
+    /// Endpoint: https://data.sec.gov/submissions/{filename}
+    ///
+    /// This method fetches additional filing history files when there are more than 1000 filings.
+    /// The filenames are provided in the `files` field of the main submissions response.
+    ///
+    /// # Parameters
+    /// * `filename` - Name of the additional submissions file (e.g., "CIK0001067983-submissions-001.json")
+    ///
+    /// # Example
+    ///
+    /// ```rust,no_run
+    /// # use edgar_rs::{EdgarApi, EdgarClient};
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let submissions = edgar_api.get_submissions_history("0001067983").await?;
+    /// if let Some(files) = &submissions.data.filings.files {
+    ///     for file in files {
+    ///         let additional = edgar_api.get_submissions_file(&file.name).await?;
+    ///         println!("Additional filings: {}", additional.data.accessionNumber.len());
+    ///     }
+    /// }
+    /// # Ok(())
+    /// # }
+    /// ```
+    async fn get_submissions_file(&self, filename: &str) -> Result<ApiResponse<Recent>>;
 
     /// Get company data for a specific concept and taxonomy
     ///

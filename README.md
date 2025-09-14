@@ -58,7 +58,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // 1. Company profile & submissions history
     let subs = api.get_submissions_history(cik).await?;
     // 2. Recent filings
-    let filings = subs.data.get_all_filings();
+    let filings = subs.data.get_recent_filings();
     // 3. Revenue time series
     let rev = api
         .get_company_concept(cik, Taxonomy::UsGaap, "RevenueFromContractWithCustomerExcludingAssessedTax")
@@ -81,11 +81,17 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
 - **`get_submissions_history(cik: &str) -> SubmissionResponse`**
   Fetches company name, CIK, ticker↔exchange map, SIC code & description and submission history.
 
+- **`get_submissions_file(filename: &str) -> Recent`**
+  Fetches additional filing history files when there are more than 1000 filings. Filenames are provided in the `files` field of the main submissions response.
+
 - **`SubmissionData::get_ticker_map() -> HashMap<String,String>`**
   Returns a map of ticker symbols to exchange names.
 
-- **`SubmissionData::get_all_filings() -> Vec<Filing>`**
-  Returns a chronological list of all filings (`form`, `filing_date`, `report_date`).
+- **`SubmissionData::get_recent_filings() -> Vec<Filing>`**
+  Returns a chronological list of recent filings (`form`, `filing_date`, `report_date`). Limited to the most recent 1000 filings.
+
+- **`SubmissionData::get_all_filings(api_client: &EdgarApi) -> Result<Vec<Filing>>`**
+  Returns a comprehensive list of all filings including those from paginated files. Use this when you need access to more than 1000 filings.
 
 - **`get_company_concept(cik: &str, taxonomy: Taxonomy, concept: &str) -> ConceptResponse`**
   Retrieves time-series values for a given GAAP/IFRS concept (e.g. revenue).
@@ -103,9 +109,6 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   - Iterate `.data.get_taxonomies()` and `.data.get_tags_for_taxonomy(taxonomy)` for counts.
   - Use `.data.get_facts_for_form("10-K")` to filter by filing type.
 
-## TODO
-
-- Pagination: filings.recent in https://data.sec.gov/submissions/CIK0001067983.json contains only 1000 filings.
 
 ## Feature Flags
 

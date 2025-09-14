@@ -160,10 +160,11 @@ pub struct FileInfo {
 
 /// Helper methods for the SubmissionHistory struct.
 impl SubmissionHistory {
-    /// Returns a list of all filings in the submission history.
+    /// Returns a list of recent filings from the submission history.
     ///
-    /// This method returns a list of all filings in the submission history,
-    /// including those in the `recent` field and those in any referenced files.
+    /// This method returns recent filings from the `recent` field, limited to
+    /// the most recent 1000 filings. For access to all filings including older
+    /// ones, use `get_all_filings()` instead.
     ///
     /// # Example
     ///
@@ -172,18 +173,59 @@ impl SubmissionHistory {
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
     /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
     /// let submissions = edgar_api.get_submissions_history("0000320193").await?;
-    /// let filings = submissions.data.get_all_filings();
+    /// let filings = submissions.data.get_recent_filings();
     /// for filing in filings {
     ///     println!("Form: {}, Filing Date: {}", filing.form, filing.filing_date);
     /// }
     /// # Ok(())
     /// # }
     /// ```
-    pub fn get_all_filings(&self) -> Vec<FilingEntry> {
-        let recent = &self.filings.recent;
+    pub fn get_recent_filings(&self) -> Vec<FilingEntry> {
+        Self::convert_recent_to_filing_entries(&self.filings.recent)
+    }
+
+    /// Returns a comprehensive list of all filings including those from paginated files.
+    ///
+    /// This method fetches additional filing files if they exist and returns
+    /// a complete list of all filings for the company. This includes recent filings
+    /// plus any older filings stored in separate paginated files.
+    ///
+    /// # Parameters
+    /// * `api_client` - An instance of EdgarApi to fetch additional files
+    ///
+    /// # Example
+    ///
+    /// ```rust,no_run
+    /// # use edgar_rs::{EdgarApi, EdgarClient};
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let submissions = edgar_api.get_submissions_history("0001067983").await?;
+    /// let all_filings = submissions.data.get_all_filings(&edgar_api).await?;
+    /// println!("Total filings: {}", all_filings.len());
+    /// # Ok(())
+    /// # }
+    /// ```
+    pub async fn get_all_filings<T: crate::api::EdgarApi>(
+        &self,
+        api_client: &T,
+    ) -> crate::error::Result<Vec<FilingEntry>> {
+        let mut all_filings = self.get_recent_filings();
+
+        if let Some(files) = &self.filings.files {
+            for file_info in files {
+                let additional_filings = api_client.get_submissions_file(&file_info.name).await?;
+                let additional_entries = Self::convert_recent_to_filing_entries(&additional_filings.data);
+                all_filings.extend(additional_entries);
+            }
+        }
+
+        Ok(all_filings)
+    }
+
+    /// Convert a Recent struct to a vector of FilingEntry
+    fn convert_recent_to_filing_entries(recent: &Recent) -> Vec<FilingEntry> {
         let mut entries = Vec::new();
 
-        // Process the recent filings
         for i in 0..recent.accessionNumber.len() {
             if i < recent.form.len() && i < recent.filingDate.len() {
                 entries.push(FilingEntry {
