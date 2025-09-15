@@ -17,7 +17,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     info!("Basic usage example started");
     // Initialize the API client with a user agent
     // Replace with your company name and contact email!
-    let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
 
     // Company CIK to retrieve data for (Apple Inc.)
 

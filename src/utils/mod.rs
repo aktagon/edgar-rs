@@ -3,4 +3,6 @@
 //! This module contains utility functions and submodules used throughout the library.
 
 pub mod cik;
+
+#[cfg(feature = "native")]
 pub mod download;

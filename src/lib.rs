@@ -43,6 +43,13 @@ pub use api::EdgarApi;
 pub use client::EdgarClient;
 pub use error::{EdgarApiError, Result};
 
+// Re-export HTTP client types
+#[cfg(feature = "native")]
+pub use http::ReqwestClient;
+#[cfg(feature = "cloudflare-workers")]
+pub use http::WorkerClient;
+pub use http::HttpClient;
+
 // Re-export types
 pub use types::{ApiResponse, Period, Taxonomy, Unit};
 
@@ -56,9 +63,11 @@ pub use models::{
 mod api;
 mod client;
 mod error;
+mod http;
 mod models;
 mod types;
 mod utils;
 
 // Private modules (not re-exported)
+#[cfg(feature = "native")]
 mod rate_limit;

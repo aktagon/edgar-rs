@@ -1,0 +1,108 @@
+//! Native HTTP client implementation using reqwest.
+
+use async_trait::async_trait;
+use log::{error, trace};
+use reqwest::Client;
+use std::collections::HashMap;
+use std::time::Duration;
+
+use crate::error::{EdgarApiError, Result};
+use crate::rate_limit::RateLimiter;
+
+use super::{HttpClient, HttpResponse};
+
+/// HTTP client implementation using reqwest
+pub struct ReqwestClient {
+    client: Client,
+    rate_limiter: RateLimiter,
+}
+
+impl ReqwestClient {
+    /// Create a new ReqwestClient with default settings
+    pub fn new() -> Result<Self> {
+        let client = Client::builder()
+            .timeout(Duration::from_secs(30))
+            .build()
+            .map_err(|e| EdgarApiError::network(e))?;
+
+        Ok(Self {
+            client,
+            rate_limiter: RateLimiter::new(10, 1), // 10 requests per second
+        })
+    }
+
+    /// Create a new ReqwestClient with custom settings
+    pub fn with_client(client: Client, rate_limit: u32) -> Self {
+        Self {
+            client,
+            rate_limiter: RateLimiter::new(rate_limit, 1),
+        }
+    }
+}
+
+#[async_trait]
+impl HttpClient for ReqwestClient {
+    async fn get(&self, url: &str, headers: &[(&str, &str)]) -> Result<HttpResponse> {
+        trace!("Starting HTTP request to {}", url);
+
+        // Wait for rate limiter
+        trace!("Waiting for rate limiter");
+        self.rate_limiter.acquire().await;
+        trace!("Rate limiter token acquired");
+
+        // Build request
+        let mut request_builder = self.client.get(url);
+        for (key, value) in headers {
+            request_builder = request_builder.header(*key, *value);
+        }
+
+        trace!("Sending GET request to {}", url);
+        let response = request_builder.send().await.map_err(|e| {
+            error!("Network error while requesting {}: {}", url, e);
+            EdgarApiError::network(e)
+        })?;
+
+        let status = response.status().as_u16();
+        trace!("Received response from {} with status code {}", url, status);
+
+        // Convert headers
+        let mut response_headers = HashMap::new();
+        for (key, value) in response.headers() {
+            if let Ok(value_str) = value.to_str() {
+                response_headers.insert(key.as_str().to_string(), value_str.to_string());
+            }
+        }
+
+        // Handle rate limiting
+        if status == 429 {
+            let retry_after = response_headers
+                .get("retry-after")
+                .and_then(|s| s.parse::<u64>().ok());
+
+            error!(
+                "Rate limited by API (status 429). Retry-After: {:?}",
+                retry_after
+            );
+            return Err(EdgarApiError::rate_limit(retry_after));
+        }
+
+        // Get response body
+        let body = response.bytes().await.map_err(|e| {
+            error!("Failed to read response body from {}: {}", url, e);
+            EdgarApiError::network(e)
+        })?;
+
+        trace!("Successfully received response from {}", url);
+        Ok(HttpResponse {
+            status,
+            headers: response_headers,
+            body: body.to_vec(),
+        })
+    }
+}
+
+impl Default for ReqwestClient {
+    fn default() -> Self {
+        Self::new().expect("Failed to create default ReqwestClient")
+    }
+}

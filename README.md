@@ -110,9 +110,57 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
   - Use `.data.get_facts_for_form("10-K")` to filter by filing type.
 
 
+## Runtime Support
+
+### Native (Default)
+
+The default `native` feature provides full functionality using `reqwest` and `tokio`:
+
+```toml
+[dependencies]
+edgar-rs = { git = "https://github.com/aktagon/edgar-rs.git", features = ["native"] }
+```
+
+### Cloudflare Workers
+
+For use in Cloudflare Workers, enable the `cloudflare-workers` feature:
+
+```toml
+[dependencies]
+edgar-rs = { git = "https://github.com/aktagon/edgar-rs.git", features = ["cloudflare-workers"] }
+```
+
+**Cloudflare Workers Example:**
+
+```rust
+use edgar_rs::{EdgarApi, EdgarClient};
+use worker::*;
+
+#[event(fetch)]
+pub async fn main(req: Request, _env: Env, _ctx: Context) -> Result<Response> {
+    // Create client for Cloudflare Workers
+    let client = EdgarClient::new_worker("YourCompany contact@yourcompany.com");
+
+    // Get submissions for Apple Inc.
+    let submissions = client.get_submissions_history("0000320193").await?;
+
+    let response_data = serde_json::json!({
+        "company": submissions.data.name,
+        "cik": submissions.data.cik,
+        "recent_filings_count": submissions.data.filings.recent.accessionNumber.len(),
+    });
+
+    Response::from_json(&response_data)
+}
+```
+
+**Note:** Bulk download functions (`download_bulk_submissions`, `download_bulk_company_facts`) are not available in Cloudflare Workers due to file system limitations.
+
 ## Feature Flags
 
-- **`examples`** – Enable to run the `basic_usage` example.
+- **`native`** – Default feature for native runtime with reqwest/tokio
+- **`cloudflare-workers`** – Enable Cloudflare Workers runtime support
+- **`examples`** – Enable to run the `basic_usage` example
 
 ## Support
 

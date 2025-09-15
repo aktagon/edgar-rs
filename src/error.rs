@@ -53,8 +53,15 @@ pub enum EdgarApiError {
     ZipError(String),
 
     /// HTTP client errors from reqwest.
+    #[cfg(feature = "native")]
     #[error("HTTP client error: {0}")]
     HttpError(#[from] reqwest::Error),
+}
+
+impl From<&str> for EdgarApiError {
+    fn from(err: &str) -> Self {
+        EdgarApiError::ParseError(err.to_string())
+    }
 }
 
 impl EdgarApiError {

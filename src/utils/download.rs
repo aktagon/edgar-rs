@@ -1,9 +1,13 @@
 //! Utilities for downloading and extracting files.
 //!
 //! This module contains utility functions for downloading and extracting files.
+//! These functions are only available when using the native feature.
 
+#[cfg(feature = "native")]
 use std::fs::File;
+#[cfg(feature = "native")]
 use std::io::{self, Cursor, Write};
+#[cfg(feature = "native")]
 use std::path::{Path, PathBuf};
 
 use crate::error::{EdgarApiError, Result};
@@ -17,6 +21,7 @@ use crate::error::{EdgarApiError, Result};
 /// # Returns
 ///
 /// The path to the temporary file.
+#[cfg(feature = "native")]
 pub fn write_temp_file(bytes: &[u8]) -> Result<PathBuf> {
     let temp_file = tempfile::NamedTempFile::new()
         .map_err(|e| EdgarApiError::request(format!("Failed to create temporary file: {}", e)))?;
@@ -43,6 +48,7 @@ pub fn write_temp_file(bytes: &[u8]) -> Result<PathBuf> {
 /// # Returns
 ///
 /// `Ok(())` if the extraction is successful, an error otherwise.
+#[cfg(feature = "native")]
 pub fn extract_zip(zip_path: &Path, output_dir: &Path) -> Result<()> {
     let file = File::open(zip_path)
         .map_err(|e| EdgarApiError::request(format!("Failed to open ZIP file: {}", e)))?;
@@ -94,6 +100,7 @@ pub fn extract_zip(zip_path: &Path, output_dir: &Path) -> Result<()> {
 /// # Returns
 ///
 /// `Ok(())` if the extraction is successful, an error otherwise.
+#[cfg(feature = "native")]
 pub fn extract_zip_from_memory(zip_data: &[u8], output_dir: &Path) -> Result<()> {
     let reader = Cursor::new(zip_data);
 
@@ -134,7 +141,7 @@ pub fn extract_zip_from_memory(zip_data: &[u8], output_dir: &Path) -> Result<()>
     Ok(())
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "native"))]
 mod tests {
     use super::*;
     use std::io::{Cursor, Read, Write};

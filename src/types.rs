@@ -4,6 +4,7 @@
 //! that are used by various components of the library.
 
 use serde::{Deserialize, Serialize};
+use std::fmt;
 
 /// Common response type for API calls
 #[derive(Debug, Clone, Serialize, Deserialize)]
@@ -61,14 +62,20 @@ pub enum Period {
     Instantaneous(u16, u8),
 }
 
+impl fmt::Display for Period {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Period::Annual(year) => write!(f, "CY{}", year),
+            Period::Quarterly(year, quarter) => write!(f, "CY{}Q{}", year, quarter),
+            Period::Instantaneous(year, quarter) => write!(f, "CY{}Q{}I", year, quarter),
+        }
+    }
+}
+
 impl Period {
     /// Converts the period to its string representation
     pub fn as_str(&self) -> String {
-        match self {
-            Period::Annual(year) => format!("CY{}", year),
-            Period::Quarterly(year, quarter) => format!("CY{}Q{}", year, quarter),
-            Period::Instantaneous(year, quarter) => format!("CY{}Q{}I", year, quarter),
-        }
+        self.to_string()
     }
 
     /// Attempts to parse a string into a Period
@@ -110,13 +117,19 @@ pub enum Unit {
     Compound(String, String),
 }
 
+impl fmt::Display for Unit {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        match self {
+            Unit::Simple(unit) => write!(f, "{}", unit),
+            Unit::Compound(numerator, denominator) => write!(f, "{}-per-{}", numerator, denominator),
+        }
+    }
+}
+
 impl Unit {
     /// Converts the unit to its string representation
     pub fn as_str(&self) -> String {
-        match self {
-            Unit::Simple(unit) => unit.clone(),
-            Unit::Compound(numerator, denominator) => format!("{}-per-{}", numerator, denominator),
-        }
+        self.to_string()
     }
 
     /// Attempts to parse a string into a Unit
