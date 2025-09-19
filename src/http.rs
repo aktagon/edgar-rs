@@ -36,27 +36,6 @@ impl HttpResponse {
     }
 }
 
-/// Extension trait for making JSON requests
-pub trait HttpClientExt: HttpClient {
-    /// Make a GET request and parse the response as JSON
-    async fn get_json<T>(&self, url: &str, headers: &[(&str, &str)]) -> Result<T>
-    where
-        T: DeserializeOwned,
-    {
-        let response = self.get(url, headers).await?;
-        if !response.is_success() {
-            return Err(EdgarApiError::api(
-                response.status,
-                format!("Request to {} failed with status {}", url, response.status),
-            ));
-        }
-        response.json()
-    }
-}
-
-// Blanket implementation for all HttpClient implementations
-impl<T: HttpClient> HttpClientExt for T {
-}
 
 /// HTTP client trait for making requests
 #[async_trait]

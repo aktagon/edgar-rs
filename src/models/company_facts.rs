@@ -15,7 +15,8 @@ pub struct CompanyFacts {
     pub cik: u64, // TODO: Changed, Review
 
     /// The entity name.
-    pub entityName: String,
+    #[serde(rename = "entityName")]
+    pub entity_name: String,
 
     /// The facts by taxonomy and tag.
     pub facts: HashMap<String, HashMap<String, Fact>>,

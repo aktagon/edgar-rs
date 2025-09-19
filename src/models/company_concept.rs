@@ -16,7 +16,8 @@ pub struct CompanyConcept {
     pub cik: u64,
     //pub cik: String,
     /// The entity name.
-    pub entityName: String,
+    #[serde(rename = "entityName")]
+    pub entity_name: String,
 
     /// The taxonomy used (e.g., "us-gaap").
     pub taxonomy: String,
@@ -66,55 +67,6 @@ pub struct ConceptValue {
     pub start: Option<String>,
 }
 
-/// Custom deserializer for CIK field which can be received as string or integer
-/// TODO: Use this instead of String or u64
-fn deserialize_cik<'de, D>(deserializer: D) -> Result<u64, D::Error>
-where
-    D: serde::Deserializer<'de>,
-{
-    struct CikVisitor;
-
-    impl<'de> serde::de::Visitor<'de> for CikVisitor {
-        type Value = u64;
-
-        fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
-            formatter.write_str("a string or integer CIK")
-        }
-
-        fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            value.parse::<u64>().map_err(serde::de::Error::custom)
-        }
-
-        fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            value.parse::<u64>().map_err(serde::de::Error::custom)
-        }
-
-        fn visit_u64<E>(self, value: u64) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            Ok(value)
-        }
-
-        fn visit_i64<E>(self, value: i64) -> Result<Self::Value, E>
-        where
-            E: serde::de::Error,
-        {
-            if value < 0 {
-                return Err(serde::de::Error::custom("CIK cannot be negative"));
-            }
-            Ok(value as u64)
-        }
-    }
-
-    deserializer.deserialize_any(CikVisitor)
-}
 
 impl CompanyConcept {
     /// Returns the values for the specified unit of measure.
@@ -305,7 +257,7 @@ mod tests {
     fn test_get_cik_as_string() {
         let concept = CompanyConcept {
             cik: 320193,
-            entityName: "APPLE INC".to_string(),
+            entity_name: "APPLE INC".to_string(),
             taxonomy: "us-gaap".to_string(),
             tag: "AccountsPayableCurrent".to_string(),
             label: "Accounts Payable, Current".to_string(),

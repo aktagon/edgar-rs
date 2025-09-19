@@ -64,30 +64,6 @@ impl RateLimiter {
         });
     }
 
-    /// Returns the current rate limit.
-    pub fn rate(&self) -> u32 {
-        self.rate
-    }
-
-    /// Returns the time period in seconds for the rate limit.
-    pub fn per_seconds(&self) -> u32 {
-        self.per_seconds
-    }
-
-    /// Updates the rate limit.
-    ///
-    /// # Parameters
-    ///
-    /// * `rate` - The new maximum number of requests allowed.
-    /// * `per_seconds` - The new time period in seconds for the rate limit.
-    pub fn update_rate(&mut self, rate: u32, per_seconds: u32) {
-        self.rate = rate;
-        self.per_seconds = per_seconds;
-
-        // We need to recreate the semaphore and replenisher
-        self.semaphore = Arc::new(Semaphore::new(rate as usize));
-        self.start_replenisher();
-    }
 }
 
 #[cfg(test)]

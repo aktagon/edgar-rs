@@ -10,7 +10,7 @@ use std::path::Path;
 use crate::api::EdgarApi;
 use crate::error::{EdgarApiError, Result};
 #[cfg(feature = "native")]
-use crate::http::{HttpClient, HttpClientExt};
+use crate::http::HttpClient;
 #[cfg(feature = "cloudflare-workers")]
 use crate::http::HttpClient;
 use crate::models::{
@@ -157,30 +157,14 @@ impl<H: HttpClient> EdgarApi for EdgarClient<H> {
         let url = format!("https://data.sec.gov/submissions/CIK{}.json", formatted_cik);
         trace!("Fetching submissions history for CIK: {}", formatted_cik);
 
-        let headers = [
-            ("User-Agent", self.user_agent.as_str()),
-            ("Accept", "application/json"),
-        ];
-
-        let response = self.http_client.get_json(&url, &headers).await?;
-        trace!("Successfully fetched submissions history for CIK: {}", formatted_cik);
-
-        Ok(response)
+        self.get(&url).await
     }
 
     async fn get_submissions_file(&self, filename: &str) -> Result<ApiResponse<Recent>> {
         let url = format!("https://data.sec.gov/submissions/{}", filename);
         trace!("Fetching submissions file: {}", filename);
 
-        let headers = [
-            ("User-Agent", self.user_agent.as_str()),
-            ("Accept", "application/json"),
-        ];
-
-        let response = self.http_client.get_json(&url, &headers).await?;
-        trace!("Successfully fetched submissions file: {}", filename);
-
-        Ok(response)
+        self.get(&url).await
     }
 
     async fn get_company_concept(
@@ -191,38 +175,22 @@ impl<H: HttpClient> EdgarApi for EdgarClient<H> {
     ) -> Result<ApiResponse<CompanyConcept>> {
         let formatted_cik = format_cik(cik)?;
         let url = format!(
-            "https://data.sec.gov/api/xbrl/companyconcept/{}/{}/{}.json",
+            "https://data.sec.gov/api/xbrl/companyconcept/CIK{}/{}/{}.json",
             formatted_cik,
             taxonomy.as_str(),
             tag
         );
         trace!("Fetching company concept for CIK: {}, taxonomy: {}, tag: {}", formatted_cik, taxonomy.as_str(), tag);
 
-        let headers = [
-            ("User-Agent", self.user_agent.as_str()),
-            ("Accept", "application/json"),
-        ];
-
-        let response = self.http_client.get_json(&url, &headers).await?;
-        trace!("Successfully fetched company concept for CIK: {}", formatted_cik);
-
-        Ok(response)
+        self.get(&url).await
     }
 
     async fn get_company_facts(&self, cik: &str) -> Result<ApiResponse<CompanyFacts>> {
         let formatted_cik = format_cik(cik)?;
-        let url = format!("https://data.sec.gov/api/xbrl/companyfacts/{}.json", formatted_cik);
+        let url = format!("https://data.sec.gov/api/xbrl/companyfacts/CIK{}.json", formatted_cik);
         trace!("Fetching company facts for CIK: {}", formatted_cik);
 
-        let headers = [
-            ("User-Agent", self.user_agent.as_str()),
-            ("Accept", "application/json"),
-        ];
-
-        let response = self.http_client.get_json(&url, &headers).await?;
-        trace!("Successfully fetched company facts for CIK: {}", formatted_cik);
-
-        Ok(response)
+        self.get(&url).await
     }
 
     async fn get_xbrl_frames(
@@ -241,15 +209,7 @@ impl<H: HttpClient> EdgarApi for EdgarClient<H> {
         );
         trace!("Fetching XBRL frames for taxonomy: {}, tag: {}, unit: {}, period: {}", taxonomy.as_str(), tag, unit, period);
 
-        let headers = [
-            ("User-Agent", self.user_agent.as_str()),
-            ("Accept", "application/json"),
-        ];
-
-        let response = self.http_client.get_json(&url, &headers).await?;
-        trace!("Successfully fetched XBRL frames");
-
-        Ok(response)
+        self.get(&url).await
     }
 
     async fn download_bulk_submissions(&self, output_path: &str) -> Result<()> {

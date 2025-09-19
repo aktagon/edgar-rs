@@ -28,8 +28,8 @@ mod worker_example {
                 let response_data = serde_json::json!({
                     "company": submissions.data.name,
                     "cik": submissions.data.cik,
-                    "entityType": submissions.data.entityType,
-                    "recent_filings_count": submissions.data.filings.recent.accessionNumber.len(),
+                    "entityType": submissions.data.entity_type,
+                    "recent_filings_count": submissions.data.filings.recent.accession_number.len(),
                     "status": submissions.status
                 });
 
@@ -60,7 +60,7 @@ mod worker_example {
         match edgar_client.get_company_facts(&cik).await {
             Ok(facts) => {
                 let response_data = serde_json::json!({
-                    "company": facts.data.entityName,
+                    "company": facts.data.entity_name,
                     "cik": facts.data.cik,
                     "facts_count": facts.data.facts.len(),
                     "status": facts.status

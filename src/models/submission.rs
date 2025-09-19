@@ -13,7 +13,8 @@ pub struct SubmissionHistory {
 
     /// The entity type.
     #[serde(default)]
-    pub entityType: String,
+    #[serde(rename = "entityType")]
+    pub entity_type: String,
 
     /// The SIC code of the company.
     #[serde(default)]
@@ -21,15 +22,18 @@ pub struct SubmissionHistory {
 
     /// The SIC description of the company.
     #[serde(default)]
-    pub sicDescription: String,
+    #[serde(rename = "sicDescription")]
+    pub sic_description: String,
 
     /// Whether the company is a insider transaction issuer.
     #[serde(default)]
-    pub insiderTransactionForIssuerExists: u8,
+    #[serde(rename = "insiderTransactionForIssuerExists")]
+    pub insider_transaction_for_issuer_exists: u8,
 
     /// Whether the company is a insider transaction reporter.
     #[serde(default)]
-    pub insiderTransactionForOwnerExists: u8,
+    #[serde(rename = "insiderTransactionForOwnerExists")]
+    pub insider_transaction_for_owner_exists: u8,
 
     /// The name of the company.
     pub name: String,
@@ -44,7 +48,8 @@ pub struct SubmissionHistory {
 
     /// The company's former names.
     #[serde(default)]
-    pub formerNames: Vec<FormerName>,
+    #[serde(rename = "formerNames")]
+    pub former_names: Vec<FormerName>,
 
     /// The company's filing history.
     pub filings: Filings,
@@ -83,19 +88,23 @@ pub struct Filings {
 pub struct Recent {
     /// The accession numbers of the filings.
     #[serde(default)]
-    pub accessionNumber: Vec<String>,
+    #[serde(rename = "accessionNumber")]
+    pub accession_number: Vec<String>,
 
     /// The filing dates of the filings.
     #[serde(default)]
-    pub filingDate: Vec<String>,
+    #[serde(rename = "filingDate")]
+    pub filing_date: Vec<String>,
 
     /// The report dates of the filings.
     #[serde(default)]
-    pub reportDate: Vec<String>,
+    #[serde(rename = "reportDate")]
+    pub report_date: Vec<String>,
 
     /// The acceptance dates and times of the filings.
     #[serde(default)]
-    pub acceptanceDateTime: Vec<String>,
+    #[serde(rename = "acceptanceDateTime")]
+    pub acceptance_date_time: Vec<String>,
 
     /// The form types of the filings.
     #[serde(default)]
@@ -103,19 +112,23 @@ pub struct Recent {
 
     /// The primary document for each filing.
     #[serde(default)]
-    pub primaryDocument: Vec<String>,
+    #[serde(rename = "primaryDocument")]
+    pub primary_document: Vec<String>,
 
     /// The primary document description for each filing.
     #[serde(default)]
-    pub primaryDocDescription: Vec<String>,
+    #[serde(rename = "primaryDocDescription")]
+    pub primary_doc_description: Vec<String>,
 
     /// The file numbers of the filings.
     #[serde(default)]
-    pub fileNumber: Vec<String>,
+    #[serde(rename = "fileNumber")]
+    pub file_number: Vec<String>,
 
     /// The film numbers of the filings.
     #[serde(default)]
-    pub filmNumber: Vec<String>,
+    #[serde(rename = "filmNumber")]
+    pub film_number: Vec<String>,
 
     /// The items referenced in the filings.
     #[serde(default)]
@@ -127,19 +140,23 @@ pub struct Recent {
 
     /// Indicates whether the filing was submitted via paper.
     #[serde(default)]
-    pub isXBRL: Vec<i64>,
+    #[serde(rename = "isXBRL")]
+    pub is_xbrl: Vec<i64>,
 
     /// Indicates whether the filing was submitted via paper.
     #[serde(default)]
-    pub isInlineXBRL: Vec<i64>,
+    #[serde(rename = "isInlineXBRL")]
+    pub is_inline_xbrl: Vec<i64>,
 
     /// Indicates whether the filing was submitted via paper.
     #[serde(default)]
-    pub isPaper: Vec<i64>,
+    #[serde(rename = "isPaper")]
+    pub is_paper: Vec<i64>,
 
     /// Instance document URLs.
     #[serde(default)]
-    pub instanceUrl: Vec<Option<String>>,
+    #[serde(rename = "instanceUrl")]
+    pub instance_url: Vec<Option<String>>,
 }
 
 /// Information about a filing history file.
@@ -149,13 +166,16 @@ pub struct FileInfo {
     pub name: String,
 
     /// The filings contained in the file.
-    pub filingCount: i64,
+    #[serde(rename = "filingCount")]
+    pub filing_count: i64,
 
     /// The start date of the filings in the file.
-    pub filingFrom: String,
+    #[serde(rename = "filingFrom")]
+    pub filing_from: String,
 
     /// The end date of the filings in the file.
-    pub filingTo: String,
+    #[serde(rename = "filingTo")]
+    pub filing_to: String,
 }
 
 /// Helper methods for the SubmissionHistory struct.
@@ -226,32 +246,32 @@ impl SubmissionHistory {
     fn convert_recent_to_filing_entries(recent: &Recent) -> Vec<FilingEntry> {
         let mut entries = Vec::new();
 
-        for i in 0..recent.accessionNumber.len() {
-            if i < recent.form.len() && i < recent.filingDate.len() {
+        for i in 0..recent.accession_number.len() {
+            if i < recent.form.len() && i < recent.filing_date.len() {
                 entries.push(FilingEntry {
-                    accession_number: recent.accessionNumber.get(i).cloned().unwrap_or_default(),
-                    filing_date: recent.filingDate.get(i).cloned().unwrap_or_default(),
-                    report_date: recent.reportDate.get(i).cloned().unwrap_or_default(),
+                    accession_number: recent.accession_number.get(i).cloned().unwrap_or_default(),
+                    filing_date: recent.filing_date.get(i).cloned().unwrap_or_default(),
+                    report_date: recent.report_date.get(i).cloned().unwrap_or_default(),
                     acceptance_date_time: recent
-                        .acceptanceDateTime
+                        .acceptance_date_time
                         .get(i)
                         .cloned()
                         .unwrap_or_default(),
                     form: recent.form.get(i).cloned().unwrap_or_default(),
-                    primary_document: recent.primaryDocument.get(i).cloned().unwrap_or_default(),
+                    primary_document: recent.primary_document.get(i).cloned().unwrap_or_default(),
                     primary_doc_description: recent
-                        .primaryDocDescription
+                        .primary_doc_description
                         .get(i)
                         .cloned()
                         .unwrap_or_default(),
-                    file_number: recent.fileNumber.get(i).cloned().unwrap_or_default(),
-                    film_number: recent.filmNumber.get(i).cloned().unwrap_or_default(),
+                    file_number: recent.file_number.get(i).cloned().unwrap_or_default(),
+                    film_number: recent.film_number.get(i).cloned().unwrap_or_default(),
                     items: recent.items.get(i).cloned().unwrap_or_default(),
                     size: recent.size.get(i).cloned().unwrap_or(0),
-                    is_xbrl: recent.isXBRL.get(i).cloned().unwrap_or(0) == 1,
-                    is_inline_xbrl: recent.isInlineXBRL.get(i).cloned().unwrap_or(0) == 1,
-                    is_paper: recent.isPaper.get(i).cloned().unwrap_or(0) == 1,
-                    instance_url: recent.instanceUrl.get(i).cloned().unwrap_or(None),
+                    is_xbrl: recent.is_xbrl.get(i).cloned().unwrap_or(0) == 1,
+                    is_inline_xbrl: recent.is_inline_xbrl.get(i).cloned().unwrap_or(0) == 1,
+                    is_paper: recent.is_paper.get(i).cloned().unwrap_or(0) == 1,
+                    instance_url: recent.instance_url.get(i).cloned().unwrap_or(None),
                 });
             }
         }

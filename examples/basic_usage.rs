@@ -48,7 +48,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     if !submissions.data.sic.is_empty() {
         println!(
             "SIC: {} - {}",
-            submissions.data.sic, submissions.data.sicDescription
+            submissions.data.sic, submissions.data.sic_description
         );
     }
 
@@ -63,7 +63,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         for file in files {
             println!(
                 "  {} - {} filings from {} to {}",
-                file.name, file.filingCount, file.filingFrom, file.filingTo
+                file.name, file.filing_count, file.filing_from, file.filing_to
             );
         }
 
@@ -139,7 +139,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!(
             "{}. {} - ${:.2} billion",
             i + 1,
-            value.entityName,
+            value.entity_name,
             value.val / 1_000_000_000.0
         );
     }

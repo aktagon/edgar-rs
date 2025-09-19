@@ -220,7 +220,7 @@ pub trait EdgarApi {
     /// if let Some(files) = &submissions.data.filings.files {
     ///     for file in files {
     ///         let additional = edgar_api.get_submissions_file(&file.name).await?;
-    ///         println!("Additional filings: {}", additional.data.accessionNumber.len());
+    ///         println!("Additional filings: {}", additional.data.accession_number.len());
     ///     }
     /// }
     /// # Ok(())

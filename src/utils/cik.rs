@@ -47,27 +47,6 @@ pub fn format_cik(cik: &str) -> Result<String, &'static str> {
     ))
 }
 
-/// Validates a CIK number.
-///
-/// # Parameters
-///
-/// * `cik` - The CIK number to validate.
-///
-/// # Returns
-///
-/// `true` if the CIK is valid, `false` otherwise.
-///
-/// # Example
-///
-/// ```
-/// use edgar_rs::utils::cik::is_valid_cik;
-///
-/// assert_eq!(is_valid_cik("0000320193"), true);
-/// assert_eq!(is_valid_cik("not a cik"), false);
-/// ```
-pub fn is_valid_cik(cik: &str) -> bool {
-    format_cik(cik).is_ok()
-}
 
 #[cfg(test)]
 mod tests {
@@ -88,13 +67,4 @@ mod tests {
         assert!(format_cik("12345678901").is_err());
     }
 
-    #[test]
-    fn test_is_valid_cik() {
-        assert!(is_valid_cik("320193"));
-        assert!(is_valid_cik("0000320193"));
-        assert!(is_valid_cik("320193-"));
-        assert!(!is_valid_cik(""));
-        assert!(!is_valid_cik("abcdef"));
-        assert!(!is_valid_cik("12345678901"));
-    }
 }

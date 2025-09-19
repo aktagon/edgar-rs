@@ -147,7 +147,7 @@ pub async fn main(req: Request, _env: Env, _ctx: Context) -> Result<Response> {
     let response_data = serde_json::json!({
         "company": submissions.data.name,
         "cik": submissions.data.cik,
-        "recent_filings_count": submissions.data.filings.recent.accessionNumber.len(),
+        "recent_filings_count": submissions.data.filings.recent.accession_number.len(),
     });
 
     Response::from_json(&response_data)

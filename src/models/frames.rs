@@ -47,7 +47,8 @@ pub struct FrameValue {
     pub cik: u64,
 
     /// The name of the entity.
-    pub entityName: String,
+    #[serde(rename = "entityName")]
+    pub entity_name: String,
 
     /// The value of the concept.
     pub val: f64,
@@ -148,7 +149,7 @@ impl XbrlFrames {
     /// ).await?;
     /// let top_10 = frames.data.get_top_companies(10, false);
     /// for value in top_10 {
-    ///     println!("{}: {} USD", value.entityName, value.val);
+    ///     println!("{}: {} USD", value.entity_name, value.val);
     /// }
     /// # Ok(())
     /// # }
