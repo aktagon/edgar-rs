@@ -27,7 +27,7 @@ impl CompanyTickers {
                 let cik = row[0].as_u64().ok_or("Invalid CIK")?;
                 let name = row[1].as_str().ok_or("Invalid name")?.to_string();
                 let ticker = row[2].as_str().ok_or("Invalid ticker")?.to_string();
-                let exchange = row[3].as_str().ok_or("Invalid exchange")?.to_string();
+                let exchange = row[3].as_str().unwrap_or("").to_string();
 
                 Ok(CompanyTickerEntry {
                     cik,

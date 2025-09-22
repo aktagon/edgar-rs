@@ -2,8 +2,9 @@
 
 use async_trait::async_trait;
 use log::{error, trace};
-use reqwest::Client;
+use reqwest::{Client, Proxy};
 use std::collections::HashMap;
+use std::env;
 use std::time::Duration;
 
 use crate::error::{EdgarApiError, Result};
@@ -20,10 +21,28 @@ pub struct ReqwestClient {
 impl ReqwestClient {
     /// Create a new ReqwestClient with default settings
     pub fn new() -> Result<Self> {
-        let client = Client::builder()
-            .timeout(Duration::from_secs(30))
-            .build()
-            .map_err(|e| EdgarApiError::network(e))?;
+        let mut builder = Client::builder().timeout(Duration::from_secs(30));
+
+        // Check for proxy environment variables and configure if present
+        if let Ok(proxy_url) = env::var("HTTP_PROXY").or_else(|_| env::var("http_proxy")) {
+            trace!("Configuring HTTP proxy: {}", proxy_url);
+            let proxy = Proxy::http(&proxy_url).map_err(|e| EdgarApiError::network(e))?;
+            builder = builder.proxy(proxy);
+        }
+
+        if let Ok(proxy_url) = env::var("HTTPS_PROXY").or_else(|_| env::var("https_proxy")) {
+            trace!("Configuring HTTPS proxy: {}", proxy_url);
+            let proxy = Proxy::https(&proxy_url).map_err(|e| EdgarApiError::network(e))?;
+            builder = builder.proxy(proxy);
+        }
+
+        // For testing with proxy, disable SSL verification if requested
+        if env::var("EDGAR_DISABLE_SSL_VERIFY").is_ok() {
+            trace!("Disabling SSL verification for proxy testing");
+            builder = builder.danger_accept_invalid_certs(true);
+        }
+
+        let client = builder.build().map_err(|e| EdgarApiError::network(e))?;
 
         Ok(Self {
             client,
@@ -106,3 +125,4 @@ impl Default for ReqwestClient {
         Self::new().expect("Failed to create default ReqwestClient")
     }
 }
+
