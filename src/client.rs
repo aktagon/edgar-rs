@@ -14,8 +14,8 @@ use crate::http::HttpClient;
 #[cfg(feature = "cloudflare-workers")]
 use crate::http::HttpClient;
 use crate::models::{
-    company_concept::CompanyConcept, company_facts::CompanyFacts, frames::XbrlFrames,
-    submission::{Recent, SubmissionHistory},
+    company_concept::CompanyConcept, company_facts::CompanyFacts, company_tickers::CompanyTickers,
+    company_tickers_mf::CompanyTickersMf, frames::XbrlFrames, submission::{Recent, SubmissionHistory},
 };
 use crate::types::{ApiResponse, Period, Taxonomy, Unit};
 use crate::utils::cik::format_cik;
@@ -212,6 +212,20 @@ impl<H: HttpClient> EdgarApi for EdgarClient<H> {
         self.get(&url).await
     }
 
+    async fn get_company_tickers(&self) -> Result<ApiResponse<CompanyTickers>> {
+        let url = "https://www.sec.gov/files/company_tickers_exchange.json";
+        trace!("Fetching company tickers exchange data");
+
+        self.get(url).await
+    }
+
+    async fn get_company_tickers_mf(&self) -> Result<ApiResponse<CompanyTickersMf>> {
+        let url = "https://www.sec.gov/files/company_tickers_mf.json";
+        trace!("Fetching mutual fund tickers data");
+
+        self.get(url).await
+    }
+
     async fn download_bulk_submissions(&self, output_path: &str) -> Result<()> {
         let url = "https://www.sec.gov/Archives/edgar/daily-index/bulkdata/submissions.zip";
 
@@ -321,6 +335,16 @@ impl<H: HttpClient> EdgarApi for EdgarClient<H> {
             period.as_str()
         );
         self.get(&url).await
+    }
+
+    async fn get_company_tickers(&self) -> Result<ApiResponse<CompanyTickers>> {
+        let url = "https://www.sec.gov/files/company_tickers_exchange.json";
+        self.get(url).await
+    }
+
+    async fn get_company_tickers_mf(&self) -> Result<ApiResponse<CompanyTickersMf>> {
+        let url = "https://www.sec.gov/files/company_tickers_mf.json";
+        self.get(url).await
     }
 
     #[cfg(feature = "native")]

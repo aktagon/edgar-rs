@@ -9,6 +9,8 @@
 //! - Retrieve XBRL company concept data
 //! - Get company facts
 //! - Fetch XBRL frames data
+//! - Get company tickers exchange data
+//! - Get mutual fund tickers data
 //! - Download bulk submissions and company facts data
 //!
 //! ## Example
@@ -33,7 +35,17 @@
 //!         Period::Instantaneous(2019, 1)
 //!     ).await?;
 //!     println!("XBRL frames status: {}", frames.status);
-//!     
+//!
+//!     // Get company tickers exchange data
+//!     let tickers = edgar_api.get_company_tickers().await?;
+//!     let entries = tickers.data.entries()?;
+//!     println!("Found {} companies", entries.len());
+//!
+//!     // Get mutual fund tickers data
+//!     let mf_tickers = edgar_api.get_company_tickers_mf().await?;
+//!     let mf_entries = mf_tickers.data.entries()?;
+//!     println!("Found {} mutual fund entries", mf_entries.len());
+//!
 //!     Ok(())
 //! }
 //! ```
@@ -55,7 +67,9 @@ pub use types::{ApiResponse, Period, Taxonomy, Unit};
 
 // Export models
 pub use models::{
-    company_concept::CompanyConcept, company_facts::CompanyFacts, frames::XbrlFrames,
+    company_concept::CompanyConcept, company_facts::CompanyFacts,
+    company_tickers::{CompanyTickers, CompanyTickerEntry},
+    company_tickers_mf::{CompanyTickersMf, MutualFundTickerEntry}, frames::XbrlFrames,
     submission::FilingEntry, submission::SubmissionHistory,
 };
 

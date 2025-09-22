@@ -6,8 +6,8 @@ use std::path::Path;
 
 use crate::error::Result;
 use crate::models::{
-    company_concept::CompanyConcept, company_facts::CompanyFacts, frames::XbrlFrames,
-    submission::{Recent, SubmissionHistory},
+    company_concept::CompanyConcept, company_facts::CompanyFacts, company_tickers::CompanyTickers,
+    company_tickers_mf::CompanyTickersMf, frames::XbrlFrames, submission::{Recent, SubmissionHistory},
 };
 use crate::types::{ApiResponse, Period, Taxonomy, Unit};
 
@@ -150,6 +150,46 @@ pub trait EdgarApi {
         unit: Unit,
         period: Period,
     ) -> Result<ApiResponse<XbrlFrames>>;
+
+    /// Get company tickers exchange data
+    ///
+    /// Endpoint: https://www.sec.gov/files/company_tickers_exchange.json
+    ///
+    /// Returns a mapping of all public companies with their CIK, name, ticker, and exchange.
+    ///
+    /// # Example
+    ///
+    /// ```rust,no_run
+    /// # use edgar_rs::{EdgarApi, EdgarClient};
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    /// let tickers = edgar_api.get_company_tickers().await?;
+    /// let entries = tickers.data.entries()?;
+    /// println!("Found {} companies", entries.len());
+    /// # Ok(())
+    /// # }
+    /// ```
+    async fn get_company_tickers(&self) -> Result<ApiResponse<CompanyTickers>>;
+
+    /// Get mutual fund tickers data
+    ///
+    /// Endpoint: https://www.sec.gov/files/company_tickers_mf.json
+    ///
+    /// Returns a mapping of all mutual funds with their CIK, series ID, class ID, and symbol.
+    ///
+    /// # Example
+    ///
+    /// ```rust,no_run
+    /// # use edgar_rs::{EdgarApi, EdgarClient};
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    /// let mf_tickers = edgar_api.get_company_tickers_mf().await?;
+    /// let entries = mf_tickers.data.entries()?;
+    /// println!("Found {} mutual fund entries", entries.len());
+    /// # Ok(())
+    /// # }
+    /// ```
+    async fn get_company_tickers_mf(&self) -> Result<ApiResponse<CompanyTickersMf>>;
 
     /// Download bulk submissions data
     ///
@@ -310,4 +350,44 @@ pub trait EdgarApi {
         unit: Unit,
         period: Period,
     ) -> Result<ApiResponse<XbrlFrames>>;
+
+    /// Get company tickers exchange data
+    ///
+    /// Endpoint: https://www.sec.gov/files/company_tickers_exchange.json
+    ///
+    /// Returns a mapping of all public companies with their CIK, name, ticker, and exchange.
+    ///
+    /// # Example
+    ///
+    /// ```rust,no_run
+    /// # use edgar_rs::{EdgarApi, EdgarClient};
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let tickers = edgar_api.get_company_tickers().await?;
+    /// let entries = tickers.data.entries()?;
+    /// println!("Found {} companies", entries.len());
+    /// # Ok(())
+    /// # }
+    /// ```
+    async fn get_company_tickers(&self) -> Result<ApiResponse<CompanyTickers>>;
+
+    /// Get mutual fund tickers data
+    ///
+    /// Endpoint: https://www.sec.gov/files/company_tickers_mf.json
+    ///
+    /// Returns a mapping of all mutual funds with their CIK, series ID, class ID, and symbol.
+    ///
+    /// # Example
+    ///
+    /// ```rust,no_run
+    /// # use edgar_rs::{EdgarApi, EdgarClient};
+    /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let mf_tickers = edgar_api.get_company_tickers_mf().await?;
+    /// let entries = mf_tickers.data.entries()?;
+    /// println!("Found {} mutual fund entries", entries.len());
+    /// # Ok(())
+    /// # }
+    /// ```
+    async fn get_company_tickers_mf(&self) -> Result<ApiResponse<CompanyTickersMf>>;
 }
