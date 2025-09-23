@@ -8,14 +8,12 @@ use std::env;
 use std::time::Duration;
 
 use crate::error::{EdgarApiError, Result};
-use crate::rate_limit::RateLimiter;
 
 use super::{HttpClient, HttpResponse};
 
 /// HTTP client implementation using reqwest
 pub struct ReqwestClient {
     client: Client,
-    rate_limiter: RateLimiter,
 }
 
 impl ReqwestClient {
@@ -44,18 +42,12 @@ impl ReqwestClient {
 
         let client = builder.build().map_err(|e| EdgarApiError::network(e))?;
 
-        Ok(Self {
-            client,
-            rate_limiter: RateLimiter::new(10, 1), // 10 requests per second
-        })
+        Ok(Self { client })
     }
 
     /// Create a new ReqwestClient with custom settings
-    pub fn with_client(client: Client, rate_limit: u32) -> Self {
-        Self {
-            client,
-            rate_limiter: RateLimiter::new(rate_limit, 1),
-        }
+    pub fn with_client(client: Client) -> Self {
+        Self { client }
     }
 }
 
@@ -63,11 +55,6 @@ impl ReqwestClient {
 impl HttpClient for ReqwestClient {
     async fn get(&self, url: &str, headers: &[(&str, &str)]) -> Result<HttpResponse> {
         trace!("Starting HTTP request to {}", url);
-
-        // Wait for rate limiter
-        trace!("Waiting for rate limiter");
-        self.rate_limiter.acquire().await;
-        trace!("Rate limiter token acquired");
 
         // Build request
         let mut request_builder = self.client.get(url);

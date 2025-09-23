@@ -81,7 +81,7 @@ impl CompanyFacts {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// let taxonomies = facts.data.get_taxonomies();
     /// println!("Available taxonomies: {:?}", taxonomies);
@@ -107,7 +107,7 @@ impl CompanyFacts {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// let tags = facts.data.get_tags_for_taxonomy("us-gaap");
     /// println!("Available us-gaap tags: {:?}", tags);
@@ -137,7 +137,7 @@ impl CompanyFacts {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// if let Some(fact) = facts.data.get_fact("us-gaap", "AccountsPayableCurrent") {
     ///     println!("Accounts Payable Current: {:?}", fact);
@@ -165,7 +165,7 @@ impl CompanyFacts {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// let q1_2023_facts = facts.data.get_facts_for_fiscal_period(2023, "Q1");
     /// for (taxonomy, tag, unit, value) in q1_2023_facts {
@@ -213,7 +213,7 @@ impl CompanyFacts {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// let form_10k_facts = facts.data.get_facts_for_form("10-K");
     /// for (taxonomy, tag, unit, value) in form_10k_facts {
@@ -257,7 +257,7 @@ impl CompanyFacts {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// if let Some(value) = facts.data.get_most_recent_value("us-gaap", "AccountsPayableCurrent", "USD") {
     ///     println!("Most recent accounts payable: {:?} USD (as of {})", value.val, value.end);

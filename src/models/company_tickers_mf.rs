@@ -55,3 +55,71 @@ pub struct MutualFundTickerEntry {
     /// Fund symbol/ticker
     pub symbol: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_company_tickers_mf_entries_success() {
+        let mf_tickers = CompanyTickersMf {
+            fields: vec!["cik".to_string(), "seriesId".to_string(), "classId".to_string(), "symbol".to_string()],
+            data: vec![
+                vec![
+                    json!(1234567),
+                    json!("S000012345"),
+                    json!("C000012345"),
+                    json!("FUNDX"),
+                ],
+                vec![
+                    json!(7654321),
+                    json!("S000067890"),
+                    json!("C000067890"),
+                    json!("FUNDY"),
+                ],
+            ],
+        };
+
+        let entries = mf_tickers.entries().unwrap();
+        assert_eq!(entries.len(), 2);
+
+        assert_eq!(entries[0].cik, 1234567);
+        assert_eq!(entries[0].series_id, "S000012345");
+        assert_eq!(entries[0].class_id, "C000012345");
+        assert_eq!(entries[0].symbol, "FUNDX");
+
+        assert_eq!(entries[1].cik, 7654321);
+        assert_eq!(entries[1].series_id, "S000067890");
+        assert_eq!(entries[1].class_id, "C000067890");
+        assert_eq!(entries[1].symbol, "FUNDY");
+    }
+
+    #[test]
+    fn test_company_tickers_mf_entries_invalid_row_length() {
+        let mf_tickers = CompanyTickersMf {
+            fields: vec!["cik".to_string(), "seriesId".to_string(), "classId".to_string(), "symbol".to_string()],
+            data: vec![
+                vec![json!(1234567), json!("S000012345"), json!("C000012345")], // Missing symbol
+            ],
+        };
+
+        let result = mf_tickers.entries();
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Invalid row length"));
+    }
+
+    #[test]
+    fn test_company_tickers_mf_entries_invalid_cik() {
+        let mf_tickers = CompanyTickersMf {
+            fields: vec!["cik".to_string(), "seriesId".to_string(), "classId".to_string(), "symbol".to_string()],
+            data: vec![
+                vec![json!("invalid"), json!("S000012345"), json!("C000012345"), json!("FUNDX")],
+            ],
+        };
+
+        let result = mf_tickers.entries();
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Invalid CIK"));
+    }
+}

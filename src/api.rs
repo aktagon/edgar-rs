@@ -30,7 +30,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let submissions = edgar_api.get_submissions_history("0000320193").await?;
     /// println!("Company name: {}", submissions.data.name);
     /// # Ok(())
@@ -53,12 +53,12 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let submissions = edgar_api.get_submissions_history("0000320193").await?;
     /// if let Some(files) = submissions.data.filings.files {
     ///     if !files.is_empty() {
     ///         let additional_submissions = edgar_api.get_submissions_file(&files[0].name).await?;
-    ///         println!("Got additional filings: {}", additional_submissions.data.filings.recent.accession_number.len());
+    ///         println!("Got additional filings: {}", additional_submissions.data.accession_number.len());
     ///     }
     /// }
     /// # Ok(())
@@ -80,7 +80,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -109,7 +109,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// println!("Company CIK: {}", facts.data.cik);
     /// # Ok(())
@@ -132,7 +132,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy, Unit, Period};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let frames = edgar_api.get_xbrl_frames(
     ///     Taxonomy::UsGaap,
     ///     "AccountsPayableCurrent",
@@ -232,7 +232,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let submissions = edgar_api.get_submissions_history("0000320193").await?;
     /// println!("Company name: {}", submissions.data.name);
     /// # Ok(())
@@ -255,7 +255,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let submissions = edgar_api.get_submissions_history("0001067983").await?;
     /// if let Some(files) = &submissions.data.filings.files {
     ///     for file in files {
@@ -282,7 +282,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -310,7 +310,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let facts = edgar_api.get_company_facts("0000320193").await?;
     /// # Ok(())
     /// # }
@@ -332,7 +332,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy, Unit, Period};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let frames = edgar_api.get_xbrl_frames(
     ///     Taxonomy::UsGaap,
     ///     "AccountsPayableCurrent",
@@ -362,7 +362,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let tickers = edgar_api.get_company_tickers().await?;
     /// let entries = tickers.data.entries()?;
     /// println!("Found {} companies", entries.len());
@@ -382,7 +382,7 @@ pub trait EdgarApi {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let mf_tickers = edgar_api.get_company_tickers_mf().await?;
     /// let entries = mf_tickers.data.entries()?;
     /// println!("Found {} mutual fund entries", entries.len());

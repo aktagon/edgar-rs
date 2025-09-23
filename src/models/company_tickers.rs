@@ -55,3 +55,85 @@ pub struct CompanyTickerEntry {
     /// Exchange name
     pub exchange: String,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn test_company_tickers_entries_success() {
+        let tickers = CompanyTickers {
+            fields: vec!["cik".to_string(), "name".to_string(), "ticker".to_string(), "exchange".to_string()],
+            data: vec![
+                vec![
+                    json!(320193),
+                    json!("Apple Inc."),
+                    json!("AAPL"),
+                    json!("Nasdaq"),
+                ],
+                vec![
+                    json!(789019),
+                    json!("Microsoft Corporation"),
+                    json!("MSFT"),
+                    json!("Nasdaq"),
+                ],
+            ],
+        };
+
+        let entries = tickers.entries().unwrap();
+        assert_eq!(entries.len(), 2);
+
+        assert_eq!(entries[0].cik, 320193);
+        assert_eq!(entries[0].name, "Apple Inc.");
+        assert_eq!(entries[0].ticker, "AAPL");
+        assert_eq!(entries[0].exchange, "Nasdaq");
+
+        assert_eq!(entries[1].cik, 789019);
+        assert_eq!(entries[1].name, "Microsoft Corporation");
+        assert_eq!(entries[1].ticker, "MSFT");
+        assert_eq!(entries[1].exchange, "Nasdaq");
+    }
+
+    #[test]
+    fn test_company_tickers_entries_invalid_row_length() {
+        let tickers = CompanyTickers {
+            fields: vec!["cik".to_string(), "name".to_string(), "ticker".to_string(), "exchange".to_string()],
+            data: vec![
+                vec![json!(320193), json!("Apple Inc."), json!("AAPL")], // Missing exchange
+            ],
+        };
+
+        let result = tickers.entries();
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Invalid row length"));
+    }
+
+    #[test]
+    fn test_company_tickers_entries_invalid_cik() {
+        let tickers = CompanyTickers {
+            fields: vec!["cik".to_string(), "name".to_string(), "ticker".to_string(), "exchange".to_string()],
+            data: vec![
+                vec![json!("invalid"), json!("Apple Inc."), json!("AAPL"), json!("Nasdaq")],
+            ],
+        };
+
+        let result = tickers.entries();
+        assert!(result.is_err());
+        assert!(result.unwrap_err().to_string().contains("Invalid CIK"));
+    }
+
+    #[test]
+    fn test_company_tickers_entries_missing_exchange() {
+        let tickers = CompanyTickers {
+            fields: vec!["cik".to_string(), "name".to_string(), "ticker".to_string(), "exchange".to_string()],
+            data: vec![
+                vec![json!(320193), json!("Apple Inc."), json!("AAPL"), json!(null)],
+            ],
+        };
+
+        let entries = tickers.entries().unwrap();
+        assert_eq!(entries.len(), 1);
+        assert_eq!(entries[0].exchange, ""); // Should default to empty string
+    }
+}

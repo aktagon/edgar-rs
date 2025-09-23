@@ -191,7 +191,7 @@ impl SubmissionHistory {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let submissions = edgar_api.get_submissions_history("0000320193").await?;
     /// let filings = submissions.data.get_recent_filings();
     /// for filing in filings {
@@ -218,7 +218,7 @@ impl SubmissionHistory {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let submissions = edgar_api.get_submissions_history("0001067983").await?;
     /// let all_filings = submissions.data.get_all_filings(&edgar_api).await?;
     /// println!("Total filings: {}", all_filings.len());
@@ -286,7 +286,7 @@ impl SubmissionHistory {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let submissions = edgar_api.get_submissions_history("0000320193").await?;
     /// let ticker_map = submissions.data.get_ticker_map();
     /// for (ticker, exchange) in ticker_map {

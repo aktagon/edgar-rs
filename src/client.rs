@@ -117,7 +117,10 @@ impl EdgarClient<crate::http::ReqwestClient> {
     /// ```rust,no_run
     /// use edgar_rs::EdgarClient;
     ///
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    /// fn example() -> Result<(), Box<dyn std::error::Error>> {
+    ///     let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    ///     Ok(())
+    /// }
     /// ```
     pub fn new(user_agent: &str) -> Result<Self> {
         use crate::http::ReqwestClient;

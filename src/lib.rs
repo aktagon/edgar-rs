@@ -21,7 +21,7 @@
 //! #[tokio::main]
 //! async fn main() -> Result<(), Box<dyn std::error::Error>> {
 //!     // Initialize with a user agent (required by SEC)
-//!     let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+//!     let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
 //!     
 //!     // Get submissions history for Apple Inc. (CIK: 0000320193)
 //!     let submissions = edgar_api.get_submissions_history("0000320193").await?;
@@ -83,5 +83,3 @@ mod types;
 mod utils;
 
 // Private modules (not re-exported)
-#[cfg(feature = "native")]
-mod rate_limit;

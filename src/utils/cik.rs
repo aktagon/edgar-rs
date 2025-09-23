@@ -18,9 +18,8 @@
 ///
 /// # Example
 ///
-/// ```
+/// ```ignore
 /// use edgar_rs::utils::cik::format_cik;
-///
 /// let formatted = format_cik("320193").unwrap();
 /// assert_eq!(formatted, "0000320193");
 /// ```
@@ -47,24 +46,47 @@ pub fn format_cik(cik: &str) -> Result<String, &'static str> {
     ))
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::*;
 
     #[test]
     fn test_format_cik() {
-        assert_eq!(format_cik("320193").unwrap(), "0000320193");
-        assert_eq!(format_cik("0000320193").unwrap(), "0000320193");
-        assert_eq!(format_cik("320193-").unwrap(), "0000320193");
-        assert_eq!(format_cik("000320193").unwrap(), "0000320193");
+        let test_cases = [
+            ("320193", "0000320193"),
+            ("0000320193", "0000320193"),
+            ("320193-", "0000320193"),
+            ("000320193", "0000320193"),
+            ("1", "0000000001"),
+            ("123456789", "0123456789"),
+        ];
+
+        for (input, expected) in test_cases {
+            assert_eq!(
+                format_cik(input).unwrap(),
+                expected,
+                "Failed for input: {}",
+                input
+            );
+        }
     }
 
     #[test]
     fn test_format_cik_errors() {
-        assert!(format_cik("").is_err());
-        assert!(format_cik("abcdef").is_err());
-        assert!(format_cik("12345678901").is_err());
-    }
+        let error_cases = [
+            ("", "CIK must contain at least one digit"),
+            ("abcdef", "CIK must contain at least one digit"),
+            ("12345678901", "CIK cannot be longer than 10 digits"),
+            ("abc1234567890123def", "CIK cannot be longer than 10 digits"),
+            ("   ", "CIK must contain at least one digit"),
+        ];
 
+        for (input, _expected_error) in error_cases {
+            assert!(
+                format_cik(input).is_err(),
+                "Expected error for input: {}",
+                input
+            );
+        }
+    }
 }

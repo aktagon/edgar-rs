@@ -23,17 +23,16 @@ use crate::error::{EdgarApiError, Result};
 /// The path to the temporary file.
 #[cfg(feature = "native")]
 pub fn write_temp_file(bytes: &[u8]) -> Result<PathBuf> {
-    let temp_file = tempfile::NamedTempFile::new()
+    let mut temp_file = tempfile::NamedTempFile::new()
         .map_err(|e| EdgarApiError::request(format!("Failed to create temporary file: {}", e)))?;
 
-    let path = temp_file.path().to_path_buf();
-
     // Write the bytes to the temporary file
-    let mut file = File::create(&path)
-        .map_err(|e| EdgarApiError::request(format!("Failed to create file: {}", e)))?;
-
-    file.write_all(bytes)
+    temp_file.write_all(bytes)
         .map_err(|e| EdgarApiError::request(format!("Failed to write file: {}", e)))?;
+
+    // Persist the temporary file to prevent automatic deletion
+    let path = temp_file.into_temp_path().keep()
+        .map_err(|e| EdgarApiError::request(format!("Failed to persist temporary file: {}", e)))?;
 
     Ok(path)
 }

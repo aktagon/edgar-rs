@@ -2,8 +2,28 @@
 //!
 //! This module contains data models for the SEC EDGAR API company concept responses.
 
-use serde::{Deserialize, Serialize};
+use serde::{Deserialize, Deserializer, Serialize};
 use std::collections::HashMap;
+
+/// Custom deserializer for CIK that accepts both string and integer values.
+fn deserialize_cik<'de, D>(deserializer: D) -> Result<u64, D::Error>
+where
+    D: Deserializer<'de>,
+{
+    use serde::de::Error;
+
+    #[derive(Deserialize)]
+    #[serde(untagged)]
+    enum CikValue {
+        String(String),
+        Integer(u64),
+    }
+
+    match CikValue::deserialize(deserializer)? {
+        CikValue::String(s) => s.parse().map_err(D::Error::custom),
+        CikValue::Integer(i) => Ok(i),
+    }
+}
 
 /// A company concept response from the SEC EDGAR API.
 ///
@@ -12,7 +32,7 @@ use std::collections::HashMap;
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CompanyConcept {
     /// The CIK number of the company.
-    //#[serde(deserialize_with = "deserialize_cik")]
+    #[serde(deserialize_with = "deserialize_cik")]
     pub cik: u64,
     //pub cik: String,
     /// The entity name.
@@ -85,7 +105,7 @@ impl CompanyConcept {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -121,7 +141,7 @@ impl CompanyConcept {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -148,7 +168,7 @@ impl CompanyConcept {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -179,7 +199,7 @@ impl CompanyConcept {
     /// ```rust,no_run
     /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -266,5 +286,121 @@ mod tests {
         };
 
         assert_eq!(concept.get_cik_as_string(), "0000320193");
+    }
+
+    fn create_test_concept() -> CompanyConcept {
+        let mut units = HashMap::new();
+
+        let usd_values = vec![
+            ConceptValue {
+                end: "2023-12-31".to_string(),
+                val: 1000000.0,
+                accn: "0000320193-23-000064".to_string(),
+                fy: 2023,
+                fp: "FY".to_string(),
+                form: "10-K".to_string(),
+                filed: "2023-11-03".to_string(),
+                frame: Some("CY2023Q4".to_string()),
+                start: Some("2023-01-01".to_string()),
+            },
+            ConceptValue {
+                end: "2023-09-30".to_string(),
+                val: 950000.0,
+                accn: "0000320193-23-000106".to_string(),
+                fy: 2024,
+                fp: "Q1".to_string(),
+                form: "10-Q".to_string(),
+                filed: "2023-11-02".to_string(),
+                frame: Some("CY2023Q3".to_string()),
+                start: Some("2023-07-01".to_string()),
+            },
+        ];
+
+        let eur_values = vec![
+            ConceptValue {
+                end: "2023-12-31".to_string(),
+                val: 850000.0,
+                accn: "0000320193-23-000064".to_string(),
+                fy: 2023,
+                fp: "FY".to_string(),
+                form: "10-K".to_string(),
+                filed: "2023-11-03".to_string(),
+                frame: Some("CY2023Q4".to_string()),
+                start: Some("2023-01-01".to_string()),
+            },
+        ];
+
+        units.insert("USD".to_string(), usd_values);
+        units.insert("EUR".to_string(), eur_values);
+
+        CompanyConcept {
+            cik: 320193,
+            entity_name: "APPLE INC".to_string(),
+            taxonomy: "us-gaap".to_string(),
+            tag: "AccountsPayableCurrent".to_string(),
+            label: "Accounts Payable, Current".to_string(),
+            description: "Test description".to_string(),
+            units,
+        }
+    }
+
+    #[test]
+    fn test_get_values_for_unit() {
+        let concept = create_test_concept();
+
+        let usd_values = concept.get_values_for_unit("USD");
+        assert_eq!(usd_values.len(), 2);
+        assert_eq!(usd_values[0].val, 1000000.0);
+        assert_eq!(usd_values[1].val, 950000.0);
+
+        let eur_values = concept.get_values_for_unit("EUR");
+        assert_eq!(eur_values.len(), 1);
+        assert_eq!(eur_values[0].val, 850000.0);
+
+        let nonexistent_values = concept.get_values_for_unit("GBP");
+        assert_eq!(nonexistent_values.len(), 0);
+    }
+
+    #[test]
+    fn test_get_most_recent_value() {
+        let concept = create_test_concept();
+
+        let latest_usd = concept.get_most_recent_value("USD");
+        assert!(latest_usd.is_some());
+        assert_eq!(latest_usd.unwrap().end, "2023-12-31");
+        assert_eq!(latest_usd.unwrap().val, 1000000.0);
+
+        let latest_eur = concept.get_most_recent_value("EUR");
+        assert!(latest_eur.is_some());
+        assert_eq!(latest_eur.unwrap().val, 850000.0);
+
+        let latest_nonexistent = concept.get_most_recent_value("GBP");
+        assert!(latest_nonexistent.is_none());
+    }
+
+    #[test]
+    fn test_get_available_units() {
+        let concept = create_test_concept();
+
+        let units = concept.get_available_units();
+        assert_eq!(units.len(), 2);
+        assert!(units.contains(&&"USD".to_string()));
+        assert!(units.contains(&&"EUR".to_string()));
+    }
+
+    #[test]
+    fn test_get_values_for_fiscal_period() {
+        let concept = create_test_concept();
+
+        let fy_2023_values = concept.get_values_for_fiscal_period(2023, "FY");
+        assert_eq!(fy_2023_values.len(), 2);
+
+        let q1_2024_values = concept.get_values_for_fiscal_period(2024, "Q1");
+        assert_eq!(q1_2024_values.len(), 1);
+        assert_eq!(q1_2024_values[0].0, "USD");
+        assert_eq!(q1_2024_values[0].1.val, 950000.0);
+
+        let nonexistent_values = concept.get_values_for_fiscal_period(2022, "Q1");
+        assert_eq!(nonexistent_values.len(), 0);
     }
 }
