@@ -103,9 +103,10 @@ impl CompanyConcept {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Config, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    /// let config = Config::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new(config)?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -139,9 +140,10 @@ impl CompanyConcept {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Config, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    /// let config = Config::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new(config)?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -166,9 +168,10 @@ impl CompanyConcept {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Config, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    /// let config = Config::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new(config)?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,
@@ -197,9 +200,10 @@ impl CompanyConcept {
     /// # Example
     ///
     /// ```rust,no_run
-    /// # use edgar_rs::{EdgarApi, EdgarClient, Taxonomy};
+    /// # use edgar_rs::{EdgarApi, EdgarClient, Config, Taxonomy};
     /// # async fn example() -> Result<(), Box<dyn std::error::Error>> {
-    /// let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    /// let config = Config::new("Your Company Name your.email@example.com");
+    /// let edgar_api = EdgarClient::new(config)?;
     /// let concept = edgar_api.get_company_concept(
     ///     "0000320193",
     ///     Taxonomy::UsGaap,

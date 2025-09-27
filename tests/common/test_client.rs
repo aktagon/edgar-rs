@@ -1,9 +1,10 @@
-use edgar_rs::EdgarClient;
+use edgar_rs::{EdgarClient, Config};
 use super::constants::TEST_USER_AGENT;
 
 /// Creates an EdgarClient for testing
 pub fn create_test_client() -> Result<EdgarClient<edgar_rs::ReqwestClient>, Box<dyn std::error::Error>> {
-    EdgarClient::new(TEST_USER_AGENT).map_err(Into::into)
+    let config = Config::new(TEST_USER_AGENT);
+    EdgarClient::new(config).map_err(Into::into)
 }
 
 

@@ -3,7 +3,7 @@
 //! This example demonstrates basic usage of the edgar-rs library to retrieve
 //! company information and financial data from the SEC EDGAR API.
 
-use edgar_rs::{EdgarClient, EdgarApi, Period, Taxonomy, Unit};
+use edgar_rs::{EdgarClient, EdgarApi, Period, Taxonomy, Unit, Config};
 use env_logger;
 use log::info;
 use std::env;
@@ -17,7 +17,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     info!("Basic usage example started");
     // Initialize the API client with a user agent
     // Replace with your company name and contact email!
-    let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    let config = Config::new("Your Company Name your.email@example.com");
+    let edgar_api = EdgarClient::new(config)?;
 
     // Company CIK to retrieve data for (Apple Inc.)
 

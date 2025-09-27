@@ -3,7 +3,7 @@
 //! This example demonstrates how to retrieve revenue-related taxonomy tags
 //! for a company using the SEC EDGAR API.
 
-use edgar_rs::{EdgarClient, EdgarApi};
+use edgar_rs::{EdgarClient, EdgarApi, Config};
 use env_logger;
 use log::info;
 use std::env;
@@ -17,7 +17,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     info!("Revenue taxonomies example started");
 
     // Initialize the API client with a user agent
-    let edgar_api = EdgarClient::new("Your Company Name your.email@example.com")?;
+    let config = Config::new("Your Company Name your.email@example.com");
+    let edgar_api = EdgarClient::new(config)?;
 
     // Get CIK from command line arguments
     let args: Vec<String> = env::args().collect();

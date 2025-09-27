@@ -3,6 +3,29 @@ use async_trait::async_trait;
 use serde::{Deserialize, Serialize};
 use std::error::Error;
 
+#[derive(Debug, Clone)]
+pub struct Config {
+    pub base_url: String,
+    pub user_agent: String,
+}
+
+impl Config {
+    pub fn new(user_agent: &str) -> Self {
+        Self {
+            base_url: "https://".to_string(),
+            user_agent: user_agent.to_string(),
+        }
+    }
+
+    pub fn build_url(&self, url: &str) -> String {
+        if url.starts_with("https://") {
+            format!("{}{}", self.base_url, &url[8..])
+        } else {
+            url.to_string()
+        }
+    }
+}
+
 // Common response type for API calls
 #[derive(Debug, Serialize, Deserialize)]
 pub struct ApiResponse<T> {
@@ -167,11 +190,11 @@ pub trait EdgarApi {
 // A default implementation of the EdgarApi trait
 pub struct EdgarClient {
     client: reqwest::Client,
-    user_agent: String,
+    config: Config,
 }
 
 impl EdgarClient {
-    pub fn new(user_agent: &str) -> Self {
+    pub fn new(config: Config) -> Self {
         // As per SEC guidelines, a user agent with contact info is required
         // The user_agent should be in format "Company Name AdminContact@example.com"
         let client = reqwest::Client::builder()
@@ -181,7 +204,7 @@ impl EdgarClient {
 
         Self {
             client,
-            user_agent: user_agent.to_string(),
+            config,
         }
     }
 
@@ -199,11 +222,12 @@ impl EdgarApi for EdgarClient {
     ) -> Result<ApiResponse<serde_json::Value>, EdgarApiError> {
         let formatted_cik = self.format_cik(cik);
         let url = format!("https://data.sec.gov/submissions/CIK{}.json", formatted_cik);
+        let final_url = self.config.build_url(&url);
 
         let response = self
             .client
-            .get(&url)
-            .header("User-Agent", &self.user_agent)
+            .get(&final_url)
+            .header("User-Agent", &self.config.user_agent)
             .send()
             .await
             .map_err(|e| EdgarApiError::NetworkError(e.to_string()))?;
@@ -244,7 +268,7 @@ impl EdgarApi for EdgarClient {
         let response = self
             .client
             .get(&url)
-            .header("User-Agent", &self.user_agent)
+            .header("User-Agent", &self.config.user_agent)
             .send()
             .await
             .map_err(|e| EdgarApiError::NetworkError(e.to_string()))?;
@@ -281,7 +305,7 @@ impl EdgarApi for EdgarClient {
         let response = self
             .client
             .get(&url)
-            .header("User-Agent", &self.user_agent)
+            .header("User-Agent", &self.config.user_agent)
             .send()
             .await
             .map_err(|e| EdgarApiError::NetworkError(e.to_string()))?;
@@ -320,7 +344,7 @@ impl EdgarApi for EdgarClient {
         let response = self
             .client
             .get(&url)
-            .header("User-Agent", &self.user_agent)
+            .header("User-Agent", &self.config.user_agent)
             .send()
             .await
             .map_err(|e| EdgarApiError::NetworkError(e.to_string()))?;
@@ -351,7 +375,7 @@ impl EdgarApi for EdgarClient {
         let response = self
             .client
             .get(url)
-            .header("User-Agent", &self.user_agent)
+            .header("User-Agent", &self.config.user_agent)
             .send()
             .await
             .map_err(|e| EdgarApiError::NetworkError(e.to_string()))?;
@@ -423,7 +447,7 @@ impl EdgarApi for EdgarClient {
         let response = self
             .client
             .get(url)
-            .header("User-Agent", &self.user_agent)
+            .header("User-Agent", &self.config.user_agent)
             .send()
             .await
             .map_err(|e| EdgarApiError::NetworkError(e.to_string()))?;
@@ -490,7 +514,8 @@ impl EdgarApi for EdgarClient {
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Initialize the API client with a user agent
-    let edgar_api = EdgarClient::new("Example Corp example@example.com");
+    let config = Config::new("Example Corp example@example.com");
+    let edgar_api = EdgarClient::new(config);
 
     // Get submissions history for Apple Inc. (CIK: 0000320193)
     let submissions = edgar_api.get_submissions_history("0000320193").await?;
